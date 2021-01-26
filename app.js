@@ -59,7 +59,7 @@ passport.deserializeUser(function(user, done) { done(null, user); });
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: "http://localhost:3000/auth/google/secrets",
+    callbackURL: "https://lit-plains-52095.herokuapp.com/auth/google/secrets",
     userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo"
   },
   function(accessToken, refreshToken, profile, cb) {
@@ -72,7 +72,7 @@ passport.use(new GoogleStrategy({
 passport.use(new FacebookStrategy({
     clientID: process.env.FACEBOOK_APP_ID,
     clientSecret: process.env.FACEBOOK_APP_SECRET,
-    callbackURL: "http://localhost:3000/auth/facebook/callback"
+    callbackURL: "https://lit-plains-52095.herokuapp.com/auth/facebook/callback"
   },
   function(accessToken, refreshToken, profile, cb) {
 
@@ -152,12 +152,7 @@ app.get("/secrets", function(req,res){
       }
     }
   });
-  // if (req.isAuthenticated()){
-  //   res.render("secrets")
-  // } else {
-  //   console.log(req.isAuthenticated());
-  //   res.redirect("/");
-  // }
+
 })
 
 app.get("/submit", function(req,res){
@@ -178,11 +173,6 @@ app.post("/submit", function(req,res){
     if (err){
       console.log(err)
     }else{
-      // foundUser.secrets = submittedSecret;
-      // foundUser.save(function(){
-      //   res.redirect("/secrets");
-      // })
-
       User.findByIdAndUpdate(
          req.user._id,
          {$push: {"secrets": submittedSecret}},
@@ -197,16 +187,6 @@ app.post("/submit", function(req,res){
      );
     }
   })
-  // User.findById(req.user._id, function(err, foundUsser){
-  //   if (err){
-  //     console.log(err)
-  //   }else{
-  //     foundUser.secrets.push(submittedSecret);
-  //     foundUser.save(function(){
-  //       res.redirect("/secrets");
-  //     })
-  //   }
-  // })
 })
 
 app.get('/logout', function (req, res){

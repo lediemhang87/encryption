@@ -219,6 +219,6 @@ app.get("/submit", function(req, res) {
   res.render("submit");
 });
 
-app.listen(process.env.PORT , function(req, res) {
+app.listen(process.env.PORT || 3000, function(req, res) {
   console.log("App is running on port! ");
 });

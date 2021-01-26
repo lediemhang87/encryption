@@ -69,19 +69,6 @@ passport.use(new GoogleStrategy({
   }
 ));
 
-passport.use(new FacebookStrategy({
-    clientID: process.env.FACEBOOK_APP_ID,
-    clientSecret: process.env.FACEBOOK_APP_SECRET,
-    callbackURL: "https://lit-plains-52095.herokuapp.com/auth/facebook/callback"
-  },
-  function(accessToken, refreshToken, profile, cb) {
-
-    User.findOrCreate({facebookId: profile.id, userName: profile.id}, function (err, user) {
-      return cb(err, user);
-    });
-  }
-));
-
 app.get('/auth/google', passport.authenticate('google', { scope: ['profile'] }));
 
 app.get('/auth/google/secrets',
@@ -91,15 +78,6 @@ app.get('/auth/google/secrets',
   });
 app.get("/", function(req, res) {
   res.render("home");
-});
-
-app.get('/auth/facebook', passport.authenticate('facebook'));
-
-app.get('/auth/facebook/callback',
-  passport.authenticate('facebook', { failureRedirect: '/' }),
-    function(req, res) {
-      // Successful authentication, redirect home.
-      res.redirect('/secrets');
 });
 
 app.get("/login", function(req, res) {
@@ -141,7 +119,7 @@ app.post("/register", function(req, res) {
 })
 
 app.get("/secrets", function(req,res){
-
+  if (req.isAuthenticated()){
     User.find({'secrets.0': {$exists: true}}, function(err, foundUsers){
     if (err){
       console.log(err);
@@ -151,7 +129,10 @@ app.get("/secrets", function(req,res){
         res.render("secrets", {userWithSecrets: foundUsers});
       }
     }
-  });
+  })
+  } else {
+    res.redirect("/");
+  }
 
 })
 
@@ -190,9 +171,8 @@ app.post("/submit", function(req,res){
 })
 
 app.get('/logout', function (req, res){
-  req.session.destroy(function (err) {
-    res.redirect('/'); //Inside a callback… bulletproof!
-  });
+  req.logout();
+  res.redirect('/'); //Inside a callback… bulletproof!
 });
 
 app.get("/submit", function(req, res) {
